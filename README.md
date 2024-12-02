@@ -271,40 +271,38 @@ async def read_root(request: Request) -> dict[str, Any]:
 Instead of using the `app` directly, you can use a main router to group all sub-routers.
 
 ```py
-# project/routers/__init__.py
-import fastapi
+# project/api/__init__.py
+from fastapi import APIRouter
 
 from project.routers.account import account
 from project.routers.admin import admin
 
-main = fastapi.APIRouter()
+main = APIRouter(prefix="/api")
 
 main.include_router(account)
 main.include_router(admin)
 ```
 
 ```py
-# project/app.py
-import project.routers
+# project/main.py
+from fastapi import FastAPI
+
+from project.api import api_router
 
 
-app = fastapi.FastAPI(
-    title="API",
-    description="API for project",
-    version="0.1.0",
-)
+app = FastAPI()
 
-app.include_router(project.routers.main)
+app.include_router(api_router)
 
 # And many other configurations...
 ```
 
-This way, you can keep your `app` file short and clean. The configuration of the app 
-will be in the `app` file, and the management of the routers will be in the 
-`routers` package.
+This way, you can keep your `main.py` file short and clean. The configuration of the app 
+will be in the `main.py` file, and the management of the routers will be in the 
+`api` package.
 
 This is really useful when you have feature flag logic that include a router or not. 
-This code won't bloat the `app` file and will be easier to maintain.
+This code won't bloat the `main.py` file and will be easier to maintain.
 
 [uvicorn]: https://www.uvicorn.org/
 [run_sync]: https://anyio.readthedocs.io/en/stable/threads.html#running-a-function-in-a-worker-thread
